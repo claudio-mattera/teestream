@@ -1,0 +1,39 @@
+stages:
+  - configure
+  - lint
+  - build
+  - test
+  - documentation
+  - package
+
+
+before_script:
+  - apt-get update
+  - apt-get install -y build-essential cmake
+
+
+configure:cmake:
+  stage: configure
+  image: debian:stable
+  script:
+    - mkdir -p ./build
+    - pushd ./build/
+    - cmake ../ -DBUILD_EXAMPLES=ON
+    - popd
+  artifacts:
+    paths:
+      - './build/'
+
+
+build:make:
+  stage: build
+  image: debian:stable
+  script:
+    - pushd ./build/
+    - make VERBOSE=1
+    - popd
+  dependencies:
+    - configure:cmake
+  artifacts:
+    paths:
+      - './build/'
